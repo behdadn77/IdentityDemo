@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityDemo.Areas.ContentManager.Controllers
 {
-    //[Authorize("AdminPolicy")]
+    [Authorize("ContentManagerPolicy")]
     [Area("ContentManager")]
     [Route("ContentManager/[controller]/[action]")]
     public class HomeController : Controller

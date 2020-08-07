@@ -50,12 +50,15 @@ namespace IdentityDemo
             {
                 options.SignIn.RequireConfirmedAccount = false;
 
-                // Password configurations
-                options.Password.RequireDigit = false;
+                // Password configurations note: must change DataValidations for ViewModels
+                options.Password.RequireDigit = false; 
                 options.Password.RequiredLength = 0;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
+
+                options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedAccount = true;
 
             })
                 .AddRoles<IdentityRole>()
@@ -65,10 +68,17 @@ namespace IdentityDemo
 
             services.AddAuthorization(x =>
             {
-                x.AddPolicy("AdminPolicy", y => y.RequireRole("Admins"));
-                x.AddPolicy("AdminPolicy", y => y.RequireRole("Admins"));
+                x.AddPolicy("AdminPolicy", y => y.RequireRole("SiteAdmins"));
+                x.AddPolicy("ContentManagerPolicy", y => y.RequireRole("ContentManagers"));
             });
+
             //
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = $"/Identity/Account/Login";
+                options.LogoutPath = $"/Identity/Account/Logout";
+                options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

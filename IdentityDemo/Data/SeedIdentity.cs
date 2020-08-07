@@ -13,7 +13,7 @@ namespace IdentityDemo.Data
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
-            var context = serviceProvider.GetRequiredService<DBContext>();
+            var context = serviceProvider.GetService<DBContext>();
 
             string[] roles = new string[] { "Admin", "ContentManager"};
 

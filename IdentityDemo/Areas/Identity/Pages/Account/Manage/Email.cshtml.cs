@@ -11,17 +11,18 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using IdentityDemo.Classes;
 
 namespace IdentityDemo.Areas.Identity.Pages.Account.Manage
 {
     public partial class EmailModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly CustomUserManager _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
 
         public EmailModel(
-            UserManager<ApplicationUser> userManager,
+            CustomUserManager userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using IdentityDemo.Classes;
 using IdentityDemo.Data;
 using IdentityDemo.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -35,7 +36,8 @@ namespace IdentityDemo.Areas.Identity
                 })
                     .AddRoles<IdentityRole>()
                     .AddDefaultUI()
-                    .AddEntityFrameworkStores<DBContext>();
+                    .AddEntityFrameworkStores<DBContext>()
+                    .AddUserManager<CustomUserManager>(); //CustomUserManager class Inherited From UserManger<ApplicationUser> remove if not necessary 
 
                 services.AddAuthorization(x =>
                 {

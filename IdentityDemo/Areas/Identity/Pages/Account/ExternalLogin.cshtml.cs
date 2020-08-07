@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using IdentityDemo.Classes;
 
 namespace IdentityDemo.Areas.Identity.Pages.Account
 {
@@ -21,13 +22,13 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
     public class ExternalLoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly CustomUserManager _userManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager,
+            CustomUserManager userManager,
             ILogger<ExternalLoginModel> logger,
             IEmailSender emailSender)
         {

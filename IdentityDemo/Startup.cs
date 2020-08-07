@@ -76,7 +76,7 @@ namespace IdentityDemo
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            SeedIdentity.Initialize(serviceProvider, identityPropertiesOptions.Value).Wait();
+            SeedIdentity.Initialize(serviceProvider, identityPropertiesOptions.Value).Wait(); //creating roles and admin acc
         }
     }
 }

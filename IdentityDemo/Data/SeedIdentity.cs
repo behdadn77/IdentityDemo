@@ -1,4 +1,5 @@
-﻿using IdentityDemo.Models;
+﻿using IdentityDemo.Classes;
+using IdentityDemo.Models;
 using IdentityDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,8 +16,10 @@ namespace IdentityDemo.Data
     {
         public static async Task Initialize(IServiceProvider serviceProvider, IdentityProperties identityProperties)
         {
-            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            //var userManager = serviceProvider.GetRequiredService<CustomUserManager>();
             //userManager.PasswordHasher = new CustomPasswordHasher();
+
+            var userManager = serviceProvider.GetRequiredService<CustomUserManager>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             string[] roles = new string[] { "SiteAdmins", "ContentManagers" };

@@ -1,0 +1,28 @@
+﻿@if (User.Identity.IsAuthenticated && User.IsInRole("SiteAdmins"))
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link text-light dropdown-toggle" id="navbardrop1" data-toggle="dropdown" asp-area="SiteAdmin" asp-controller="Home" asp-action="Index">Site Admin Index</a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" asp-area="SiteAdmin" asp-controller="Home" asp-action="Index">Site Admin Index </a>
+            <a class="dropdown-item" asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="Index">Manage Users </a>
+        </div>
+    </li>
+}
+@if (User.Identity.IsAuthenticated && User.IsInRole("ContentManagers"))
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link text-light dropdown-toggle" id="navbardrop2" data-toggle="dropdown" asp-area="ContentManager" asp-controller="Home" asp-action="Index">Content Manager Index</a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" asp-area="ContentManager" asp-controller="Home" asp-action="Index">Content Manager Index</a>
+        </div>
+    </li>
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link text-light dropdown-toggle" id="navbardrop2" data-toggle="dropdown" asp-area="" asp-controller="" asp-action=""></a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" asp-area="" asp-controller="" asp-action=""></a>
+        </div>
+    </li>
+}

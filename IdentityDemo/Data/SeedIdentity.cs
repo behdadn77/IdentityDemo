@@ -11,61 +11,56 @@ namespace IdentityDemo.Data
 {
     public class SeedIdentity
     {
-        public static void Initialize(IServiceProvider serviceProvider)
+        public static async Task Initialize(IServiceProvider serviceProvider
+/*, SitePropertiesViewModel siteProperties*/)
         {
-            var context = serviceProvider.GetService<DBContext>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            //userManager.PasswordHasher = new CustomPasswordHasher();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            string[] roles = new string[] { "Admin", "ContentManager"};
-
-            foreach (string role in roles)
-            {
-                var roleStore = new RoleStore<IdentityRole>(context);
-
-                if (!context.Roles.Any(r => r.Name == role))
+            string[] roles = new string[] { "Admins", "ContentManagers" };
+            foreach (var item in /*siteProperties.roles*/ roles)
+            { 
+                if (await roleManager.RoleExistsAsync(item) == false)
                 {
-                    roleStore.CreateAsync(new IdentityRole(role));
+                    IdentityRole newrole = new IdentityRole(item);
+                    await roleManager.CreateAsync(newrole);
                 }
             }
 
-
-            var user = new ApplicationUser
+            var user = await userManager.FindByEmailAsync(/*siteProperties.AdminInfo.adminusername*/"jj@example.com");
+            if (user == null)
             {
-                FirstName = "John",
-                LastName = "Johnson",
-                Email = "jj@example.com",
-                NormalizedEmail = "jj@example.com".ToUpper(),
-                UserName = "Owner",
-                NormalizedUserName = "OWNER",
-                PhoneNumber = "+111111111111",
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true,
-                SecurityStamp = Guid.NewGuid().ToString("D")
-            };
+                //user = new ApplicationUser()
+                //{
+                //    Email = siteProperties.AdminInfo.adminusername,
+                //    UserName = siteProperties.AdminInfo.adminusername,
+                //    PhoneNumber = siteProperties.AdminInfo.adminphone,
+                //    FirstName = "admin",
+                //    LastName = ""
+                //};
+                user = new ApplicationUser()
+                {
+                    FirstName = "John",
+                    LastName = "Johnson",
+                    Email = "jj@example.com",
+                    NormalizedEmail = "jj@example.com".ToUpper(),
+                    UserName = "jj@example.com",
+                    NormalizedUserName = "jj@example.com".ToUpper(), //IMPORTENT USERNAME MUST BE SAME AS EMAIL ADDRESS OTHERWISE LOGIN FAILES
+                    PhoneNumber = "+111111111111",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    //SecurityStamp = Guid.NewGuid().ToString("D")
+                };
 
 
-            if (!context.Users.Any(u => u.UserName == user.UserName))
-            {
-                var password = new PasswordHasher<ApplicationUser>();
-                var hashed = password.HashPassword(user, "secret");
-                user.PasswordHash = hashed;
-
-                var userStore = new UserStore<ApplicationUser>(context);
-                var result = userStore.CreateAsync(user);
-
+                var status = await userManager.CreateAsync(user, "password" /*siteProperties.AdminInfo.adminpassword*/);
+                if (status.Succeeded == true)
+                {
+                    await userManager.AddToRoleAsync(user, "Admins");
+                }
             }
-
-            AssignRoles(serviceProvider, user.Email, roles).Wait();
-
-            context.SaveChangesAsync();
         }
 
-        public static async Task<IdentityResult> AssignRoles(IServiceProvider services, string email, string[] roles)
-        {
-            UserManager<ApplicationUser> _userManager = services.GetService<UserManager<ApplicationUser>>();
-            ApplicationUser user = await _userManager.FindByEmailAsync(email);
-            var result = await _userManager.AddToRolesAsync(user, roles);
-
-            return result;
-        }
     }
 }

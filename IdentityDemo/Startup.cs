@@ -31,8 +31,9 @@ namespace IdentityDemo
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -62,7 +63,7 @@ namespace IdentityDemo
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-            SeedIdentity.Initialize(app.ApplicationServices);
+            SeedIdentity.Initialize(serviceProvider).Wait();
         }
     }
 }

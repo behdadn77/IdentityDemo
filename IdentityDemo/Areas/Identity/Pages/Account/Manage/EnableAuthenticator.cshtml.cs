@@ -149,7 +149,7 @@ namespace IdentityDemo.Areas.Identity.Pages.Account.Manage
         {
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("IdentityDemo"),
+                _urlEncoder.Encode("Identity Demo"), //change the site name here (site name in authenticator app)
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

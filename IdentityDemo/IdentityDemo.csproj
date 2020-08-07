@@ -18,7 +18,6 @@
   <ItemGroup>
     <Folder Include="Areas\ContentManager\Data\" />
     <Folder Include="Areas\ContentManager\Models\" />
-    <Folder Include="Areas\Identity\Data\" />
     <Folder Include="Areas\SiteAdmin\Data\" />
     <Folder Include="Areas\SiteAdmin\Models\" />
   </ItemGroup>

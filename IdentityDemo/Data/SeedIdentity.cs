@@ -19,7 +19,7 @@ namespace IdentityDemo.Data
             //userManager.PasswordHasher = new CustomPasswordHasher();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            string[] roles = new string[] { "Admins", "ContentManagers" };
+            string[] roles = new string[] { "SiteAdmins", "ContentManagers" };
             foreach (var item in roles)
             {
                 if (await roleManager.RoleExistsAsync(item) == false)
@@ -45,7 +45,7 @@ namespace IdentityDemo.Data
                 var status = await userManager.CreateAsync(user, identityProperties.AdminUser.Password);
                 if (status.Succeeded == true)
                 {
-                    await userManager.AddToRoleAsync(user, "Admins");
+                    await userManager.AddToRoleAsync(user, "SiteAdmins");
                 }
             }
         }

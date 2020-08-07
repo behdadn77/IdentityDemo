@@ -21,20 +21,6 @@ namespace IdentityDemo.Areas.Identity
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("DBContextConnection")));
 
-                //services.Configure<IdentityOptions>(options =>
-                //{
-                //    // Password configurations
-                //    options.Password.RequireDigit = false;
-                //    options.Password.RequiredLength = 0;
-                //    options.Password.RequireNonAlphanumeric = false;
-                //    options.Password.RequireUppercase = false;
-                //    options.Password.RequireLowercase = false;
-
-                //    //options.SignIn.RequireConfirmedAccount = false;
-                //});
-
-                //services.AddIdentity<ApplicationUser,IdentityRole>(/*options => options.SignIn.RequireConfirmedAccount = true*/)
-
                 services.AddDefaultIdentity<ApplicationUser>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
@@ -53,7 +39,8 @@ namespace IdentityDemo.Areas.Identity
 
                 services.AddAuthorization(x =>
                 {
-                    x.AddPolicy("UserPolicy", y => y.RequireRole("User", "PostAdmin", "UserManagerAdmin"));
+                    x.AddPolicy("AdminPolicy", y => y.RequireRole("Admins"));
+                    x.AddPolicy("AdminPolicy", y => y.RequireRole("Admins"));
                 });
 
             });

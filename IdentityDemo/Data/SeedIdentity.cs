@@ -1,4 +1,5 @@
 ﻿using IdentityDemo.Models;
+using IdentityDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,21 +7,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static IdentityDemo.Models.ViewModels.IdentityPropertiesViewModel;
 
 namespace IdentityDemo.Data
 {
     public class SeedIdentity
     {
-        public static async Task Initialize(IServiceProvider serviceProvider
-/*, SitePropertiesViewModel siteProperties*/)
+        public static async Task Initialize(IServiceProvider serviceProvider, IdentityProperties identityProperties)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             //userManager.PasswordHasher = new CustomPasswordHasher();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             string[] roles = new string[] { "Admins", "ContentManagers" };
-            foreach (var item in /*siteProperties.roles*/ roles)
-            { 
+            foreach (var item in roles)
+            {
                 if (await roleManager.RoleExistsAsync(item) == false)
                 {
                     IdentityRole newrole = new IdentityRole(item);
@@ -28,33 +29,20 @@ namespace IdentityDemo.Data
                 }
             }
 
-            var user = await userManager.FindByEmailAsync(/*siteProperties.AdminInfo.adminusername*/"jj@example.com");
+            var user = await userManager.FindByEmailAsync(identityProperties.AdminUser.EmailAddress);
             if (user == null)
             {
-                //user = new ApplicationUser()
-                //{
-                //    Email = siteProperties.AdminInfo.adminusername,
-                //    UserName = siteProperties.AdminInfo.adminusername,
-                //    PhoneNumber = siteProperties.AdminInfo.adminphone,
-                //    FirstName = "admin",
-                //    LastName = ""
-                //};
                 user = new ApplicationUser()
                 {
-                    FirstName = "John",
-                    LastName = "Johnson",
-                    Email = "jj@example.com",
-                    NormalizedEmail = "jj@example.com".ToUpper(),
-                    UserName = "jj@example.com",
-                    NormalizedUserName = "jj@example.com".ToUpper(), //IMPORTENT USERNAME MUST BE SAME AS EMAIL ADDRESS OTHERWISE LOGIN FAILES
-                    PhoneNumber = "+111111111111",
+                    Email = identityProperties.AdminUser.EmailAddress,
+                    NormalizedEmail = identityProperties.AdminUser.EmailAddress.ToUpper(),
+                    UserName = identityProperties.AdminUser.EmailAddress,
+                    NormalizedUserName = identityProperties.AdminUser.EmailAddress.ToUpper(), //IMPORTENT USERNAME MUST BE SAME AS EMAIL ADDRESS OTHERWISE LOGIN FAILES
                     EmailConfirmed = true,
-                    PhoneNumberConfirmed = true,
-                    //SecurityStamp = Guid.NewGuid().ToString("D")
                 };
 
 
-                var status = await userManager.CreateAsync(user, "password" /*siteProperties.AdminInfo.adminpassword*/);
+                var status = await userManager.CreateAsync(user, identityProperties.AdminUser.Password);
                 if (status.Succeeded == true)
                 {
                     await userManager.AddToRoleAsync(user, "Admins");

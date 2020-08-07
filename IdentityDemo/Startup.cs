@@ -12,14 +12,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using IdentityDemo.Models.ViewModels;
+using static IdentityDemo.Models.ViewModels.IdentityPropertiesViewModel;
+using Microsoft.Extensions.Options;
 
 namespace IdentityDemo
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            Configuration = configuration;
+            //Configuration = configuration;
+
+            var builder = new ConfigurationBuilder();
+            builder.SetBasePath(env.ContentRootPath);
+            builder.AddJsonFile("identitysettings.json", optional: false, reloadOnChange: false);
+            builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -28,10 +37,13 @@ namespace IdentityDemo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.Configure<IdentityProperties>(Configuration.GetSection("IdentityProperties"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider,
+            IOptions<IdentityProperties> identityPropertiesOptions)
         {
 
             if (env.IsDevelopment())
@@ -63,7 +75,8 @@ namespace IdentityDemo
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-            SeedIdentity.Initialize(serviceProvider).Wait();
+
+            SeedIdentity.Initialize(serviceProvider, identityPropertiesOptions.Value).Wait();
         }
     }
 }

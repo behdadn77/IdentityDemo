@@ -1,0 +1,8 @@
+{
+  "IdentityProperties": {
+    "AdminUser": {
+      "EmailAddress": "admin@Identitydemo.com",
+      "Password": "password"
+    }
+  }
+}

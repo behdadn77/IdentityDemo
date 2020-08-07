@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using IdentityDemo.Models.ViewModels;
 using static IdentityDemo.Models.ViewModels.IdentityPropertiesViewModel;
 using Microsoft.Extensions.Options;
+using IdentityDemo.Classes;
 
 namespace IdentityDemo
 {
@@ -39,6 +40,35 @@ namespace IdentityDemo
             services.AddControllersWithViews();
 
             services.Configure<IdentityProperties>(Configuration.GetSection("IdentityProperties"));
+
+            //Identity configurations (can be separated in IdentityHostingStartup)
+            services.AddDbContext<DBContext>(options =>
+                  options.UseSqlServer(
+                      Configuration.GetConnectionString("DBContextConnection")));
+
+            services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+
+                // Password configurations
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 0;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+
+            })
+                .AddRoles<IdentityRole>()
+                .AddDefaultUI()
+                .AddEntityFrameworkStores<DBContext>()
+                .AddUserManager<CustomUserManager>(); //CustomUserManager class Inherited From UserManger<ApplicationUser> remove if not necessary 
+
+            services.AddAuthorization(x =>
+            {
+                x.AddPolicy("AdminPolicy", y => y.RequireRole("Admins"));
+                x.AddPolicy("AdminPolicy", y => y.RequireRole("Admins"));
+            });
+            //
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

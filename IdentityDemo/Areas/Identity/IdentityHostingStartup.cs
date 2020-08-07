@@ -1,5 +1,6 @@
 ﻿using System;
 using IdentityDemo.Areas.Identity.Data;
+using IdentityDemo.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;

@@ -12,7 +12,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\ContentManager\Data\" />
+    <Folder Include="Areas\ContentManager\Models\" />
+    <Folder Include="Areas\SiteAdmin\Data\" />
+    <Folder Include="Areas\SiteAdmin\Models\" />
   </ItemGroup>
 
 </Project>

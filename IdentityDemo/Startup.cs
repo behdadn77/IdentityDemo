@@ -68,7 +68,7 @@ namespace IdentityDemo
 
             services.AddAuthorization(x =>
             {
-                x.AddPolicy("AdminPolicy", y => y.RequireRole("SiteAdmins"));
+                x.AddPolicy("SiteAdminPolicy", y => y.RequireRole("SiteAdmins"));
                 x.AddPolicy("ContentManagerPolicy", y => y.RequireRole("ContentManagers"));
             });
 

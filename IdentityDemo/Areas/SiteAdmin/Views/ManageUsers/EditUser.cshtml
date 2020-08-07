@@ -1,0 +1,15 @@
+﻿@model EditUserViewModel
+<h1>@Model.CurrentUsername ویرایش کاربر</h1>
+<form asp-action="EditUser">
+    <input type="hidden" asp-for="CurrentUsername" />
+    <div class="form-group">
+        <input class="form-control" asp-for="Username" placeholder="Username (Email Address)" />
+    </div>
+    <div class="form-group">
+        <input class="form-control" asp-for="FirstName" placeholder="FirstName" />
+    </div>
+    <div class="form-group">
+        <input class="form-control" asp-for="LastName" placeholder="Lastname" />
+    </div>
+    <button class="btn btn-warning" style="margin-top:4px;">ویرایش</button>
+</form>

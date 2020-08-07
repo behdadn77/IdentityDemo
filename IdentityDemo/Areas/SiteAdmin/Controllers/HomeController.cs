@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityDemo.Areas.SiteAdmin.Controllers
 {
-    [Authorize("AdminPolicy")]
+    [Authorize("SiteAdminPolicy")]
     [Area("SiteAdmin")]
     [Route("SiteAdmin/[controller]/[action]")]
 

@@ -1,0 +1,52 @@
+﻿
+<div class="rtl">
+
+    <h1>مدیریت کابران</h1>
+    <div class="row">
+        <select class="form-control mb-2 mr-2" id="comboUsers">
+        </select>
+    </div>
+    <div class="row mb-5">
+        <form asp-action="ChangePass">
+            <input type="hidden" id="txtusernamechngpass" name="username" />
+            <button class="btn btn-warning mr-2" disabled id="btnChangePass">تعویض رمز</button>
+        </form>
+        <form asp-action="EditUser">
+            <input type="hidden" id="txtusernameedit" name="username" />
+            <button class="btn btn-warning  mr-2" disabled id="btnEdit">ویرایش کاربر</button>
+        </form>
+        <form asp-action="DeleteUser">
+            <input type="hidden" id="txtusernamedelete" name="username" />
+            <button class="btn btn-danger mr-2" disabled @*onclick="return confirm('Are you sure?')"*@ id="btnDelete">حذف کاربر</button>
+        </form>
+    </div>
+    <hr />
+    <div id="roles" style="margin-top:20px;">
+    </div>
+</div>
+<script>
+    $(function () {
+        $.get('/SiteAdmin/ManageUsers/ChangeUserInRoles', function (data) {
+            $(roles).html(data);
+        })
+
+        $.get('/SiteAdmin/ManageUsers/UsersCombo', function (data) {
+            $(comboUsers).html(data);
+        })
+        $(comboUsers).change(function () {
+            $(txtusernamechngpass).val($(comboUsers).val());
+            $(txtusernameedit).val($(comboUsers).val());
+            $(txtusernamedelete).val($(comboUsers).val());
+            if ($(comboUsers).val() == "") {
+                $(btnDelete).attr('disabled', 'disabled')
+                $(btnEdit).attr('disabled', 'disabled')
+                $(btnChangePass).attr('disabled', 'disabled')
+                $(res).html('');
+            } else {
+                $(btnDelete).removeAttr('disabled')
+                $(btnEdit).removeAttr('disabled')
+                $(btnChangePass).removeAttr('disabled')
+            }
+        })
+    })
+</script>

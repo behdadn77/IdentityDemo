@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityDemo.Models
+namespace IdentityDemo.Data
 {
     public class DBContext : IdentityDbContext<ApplicationUser>
     {

@@ -1,5 +1,5 @@
 ﻿using System;
-using IdentityDemo.Areas.Identity.Data;
+using IdentityDemo.Data;
 using IdentityDemo.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -29,6 +29,8 @@ namespace IdentityDemo.Areas.Identity
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireUppercase = false;
                     options.Password.RequireLowercase = false;
+
+                    options.SignIn.RequireConfirmedAccount = false;
                 });
 
 

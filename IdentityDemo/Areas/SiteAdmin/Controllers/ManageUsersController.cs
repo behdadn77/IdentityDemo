@@ -37,12 +37,11 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string searchQuery = "")
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string query = "")
         {
-            ViewData["defaultAdminUserName"] = options.Value.AdminUser.EmailAddress;
-            ViewData["defaultAdminRoleName"] = "SiteAdmins";
+            query = query ?? "";
             List<UserRolesViewModel> userRolesList = new List<UserRolesViewModel>();
-            foreach (var user in userManager.Users.Skip((page - 1) * pageSize).Take(pageSize).OrderBy(x=>x.UserName).ToList())
+            foreach (var user in userManager.Users.Where(x => x.UserName.Contains(query)).Skip((page - 1) * pageSize).Take(pageSize).OrderBy(x => x.UserName).ToList())
             {
                 UserRolesViewModel userRoles = new UserRolesViewModel()
                 {
@@ -58,14 +57,18 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
                 }
                 userRolesList.Add(userRoles);
             }
+            ViewData["pageNum"] = page;
+            ViewData["totalPages"] = Math.Ceiling(userManager.Users.Count() / (double)pageSize);
+            ViewData["query"] = query;
+
             return View(userRolesList);
         }
 
-        [HttpGet]
-        public IActionResult UsersCombo()
-        {
-            return PartialView(db.Users.ToList().Select(x => x.UserName).ToList());
-        }
+        //[HttpGet]
+        //public IActionResult UsersCombo()
+        //{
+        //    return PartialView(db.Users.ToList().Select(x => x.UserName).ToList());
+        //}
 
         [HttpGet]
         public IActionResult RegisterUser()

@@ -2,6 +2,13 @@
 
 <div class="rtl">
     <h1>مدیریت کابران</h1>
+    <div class="row">
+        <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="Index" method="get">
+            <input name="query" placeholder="Search user" value="@ViewData["query"]" />
+            <button class="btn btn-primary">Search</button>
+        </form>
+        <a class="btn btn-primary" asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="RegisterUser">Register new User</a>
+    </div>
     <div class="row mb-5">
         <table class="table table-bordered">
             <thead>
@@ -10,7 +17,7 @@
                     <td>نام</td>
                     <td>نام خانوادگی</td>
                     <td>Roles</td>
-
+                    <td></td>
                 </tr>
             </thead>
             @foreach (var item in Model)
@@ -23,48 +30,46 @@
                         @foreach (var role in item.Roles)
                         {
                             <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="roleCheckbox" @(role.IsInRole ? "checked" : "")
-                                       @(ViewData["defaultAdminUserName"].ToString() == item.User.UserName && role.RoleName == ViewData["defaultAdminRoleName"].ToString() ? "disabled" : "")
+                                <input type="checkbox" class="custom-control-input" id="roleCheckbox" @(role.IsInRole ? "checked" : "") disabled)
                                        userName="@item.User.UserName" rolename="@role.RoleName">
                                 <label class="custom-control-label">@role.RoleName</label>
                             </div>
                         }
                     </td>
+                    <td>
+                        <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="EditUser" method="get">
+                            <input type="hidden" name="userName" value="@item.User.UserName" />
+                            <button class="btn btn-warning  mr-2">ویرایش کاربر</button>
+                        </form>
+                        <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="DeleteUser" method="get">
+                            <input type="hidden" name="userName" />
+                            <button class="btn btn-danger mr-2" onclick="return confirm('Are you sure?')">حذف کاربر</button>
+                        </form>
+                        <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="ChangePass" method="get">
+                            <input type="hidden" name="userUame" />
+                            <button class="btn btn-warning mr-2">تعویض رمز</button>
+                        </form>
+                    </td>
                 </tr>
             }
         </table>
-
-        <form asp-action="ChangePass">
-            <input type="hidden" id="txtUsernameChangPass" name="username" />
-            <button class="btn btn-warning mr-2" disabled id="btnChangePass">تعویض رمز</button>
-        </form>
-        <form asp-action="EditUser">
-            <input type="hidden" id="txtUserameEdit" name="username" />
-            <button class="btn btn-warning  mr-2" disabled id="btnEdit">ویرایش کاربر</button>
-        </form>
-        <form asp-action="DeleteUser">
-            <input type="hidden" id="txtUsernameDelete" name="username" />
-            <button class="btn btn-danger mr-2" disabled @*onclick="return confirm('Are you sure?')"*@ id="btnDelete">حذف کاربر</button>
-        </form>
     </div>
-    <hr />
+
+    <div class="pull-right">
+        <nav aria-label="...">
+            <ul class="pagination">
+                @for (int i = 1; i <= (double)ViewData["totalPages"]; i++)
+                {
+                    <li class="@(i == (int)ViewData["pageNum"]?"page-item active":"page-item")">
+                        <a class="page-link" href="/SiteAdmin/ManageUsers/Index/?query=@ViewData["query"]&page=@i">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+
+    </div>
+
 </div>
+
 <script>
-    $(function () {
-        $(comboUsers).change(function () {
-            $(txtusernamechngpass).val($(comboUsers).val());
-            $(txtusernameedit).val($(comboUsers).val());
-            $(txtusernamedelete).val($(comboUsers).val());
-            if ($(comboUsers).val() == "") {
-                $(btnDelete).attr('disabled', 'disabled')
-                $(btnEdit).attr('disabled', 'disabled')
-                $(btnChangePass).attr('disabled', 'disabled')
-                $(res).html('');
-            } else {
-                $(btnDelete).removeAttr('disabled')
-                $(btnEdit).removeAttr('disabled')
-                $(btnChangePass).removeAttr('disabled')
-            }
-        })
-    })
 </script>

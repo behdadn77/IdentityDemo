@@ -228,7 +228,7 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
             var user = await userManager.FindByNameAsync(userName);
             if (user != null)
             {
-                foreach (var role in roles)
+                foreach (var role in roles) //note: Don't use lambda ForEach
                 {
                     await userManager.AddToRoleAsync(user, role);
                 }

@@ -9,6 +9,7 @@ using IdentityDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using static IdentityDemo.Models.ViewModels.IdentityPropertiesViewModel;
 
@@ -21,19 +22,43 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
     {
         private readonly DBContext db;
         private readonly CustomUserManager userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly IOptions<IdentityProperties> options;
+        private readonly ILogger<ManageUsersController> logger;
 
-        public ManageUsersController(DBContext db, CustomUserManager userManager, IOptions<IdentityProperties> options)
+        public ManageUsersController(DBContext db, CustomUserManager userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityProperties> options,
+            ILogger<ManageUsersController> logger)
         {
             this.db = db;
             this.userManager = userManager;
+            this.roleManager = roleManager;
             this.options = options;
+            this.logger = logger;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string searchQuery = "")
         {
-            return View();
+            ViewData["defaultAdminUserName"] = options.Value.AdminUser.EmailAddress;
+            ViewData["defaultAdminRoleName"] = "SiteAdmins";
+            List<UserRolesViewModel> userRolesList = new List<UserRolesViewModel>();
+            foreach (var user in userManager.Users.Skip((page - 1) * pageSize).Take(pageSize).OrderBy(x=>x.UserName).ToList())
+            {
+                UserRolesViewModel userRoles = new UserRolesViewModel()
+                {
+                    User = user
+                };
+                foreach (var role in roleManager.Roles.ToList())
+                {
+                    userRoles.Roles.Add(new UserRoleStatus()
+                    {
+                        RoleName = role.Name,
+                        IsInRole = await userManager.IsInRoleAsync(user, role.Name)
+                    });
+                }
+                userRolesList.Add(userRoles);
+            }
+            return View(userRolesList);
         }
 
         [HttpGet]
@@ -174,7 +199,7 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
         }
 
         [HttpGet]
-        public IActionResult ChangeUserInRoles()
+        public async Task<IActionResult> ChangeUserInRolesAsync()
         {
             ViewData["defaultAdminUserName"] = options.Value.AdminUser.EmailAddress;
             ViewData["defaultAdminRoleName"] = "SiteAdmins";
@@ -212,6 +237,5 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
                 return Json(false);
             }
         }
-
     }
 }

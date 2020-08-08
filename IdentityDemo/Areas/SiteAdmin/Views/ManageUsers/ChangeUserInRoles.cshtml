@@ -20,7 +20,7 @@
             {
                 <td>
                     <input type="checkbox" id="chkbRole"
-                           @(await usermanager.IsInRoleAsync(item, itemrole.Name) ? "checked=checked" : "")
+                           @*@(await usermanager.IsInRoleAsync(item, itemrole.Name) ? "checked=checked" : "")*@
                            @(ViewData["defaultAdminUserName"].ToString() == item.UserName && itemrole.Name == ViewData["defaultAdminRoleName"].ToString() ? "disabled=disabled" : "")
                            userid="@item.Id" rolename="@itemrole.Name" />
                 </td>

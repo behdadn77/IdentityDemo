@@ -1,38 +1,56 @@
-﻿
-<div class="rtl">
+﻿@model List<UserRolesViewModel>
 
+<div class="rtl">
     <h1>مدیریت کابران</h1>
-    <div class="row">
-        <select class="form-control mb-2 mr-2" id="comboUsers">
-        </select>
-    </div>
     <div class="row mb-5">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>نام کاربری</td>
+                    <td>نام</td>
+                    <td>نام خانوادگی</td>
+                    <td>Roles</td>
+
+                </tr>
+            </thead>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@($"{item.User.UserName}")</td>
+                    <td>@($"{item.User.FirstName}")</td>
+                    <td>@($"{item.User.LastName}")</td>
+                    <td>
+                        @foreach (var role in item.Roles)
+                        {
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="roleCheckbox" @(role.IsInRole ? "checked" : "")
+                                       @(ViewData["defaultAdminUserName"].ToString() == item.User.UserName && role.RoleName == ViewData["defaultAdminRoleName"].ToString() ? "disabled" : "")
+                                       userName="@item.User.UserName" rolename="@role.RoleName">
+                                <label class="custom-control-label">@role.RoleName</label>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+
         <form asp-action="ChangePass">
-            <input type="hidden" id="txtusernamechngpass" name="username" />
+            <input type="hidden" id="txtUsernameChangPass" name="username" />
             <button class="btn btn-warning mr-2" disabled id="btnChangePass">تعویض رمز</button>
         </form>
         <form asp-action="EditUser">
-            <input type="hidden" id="txtusernameedit" name="username" />
+            <input type="hidden" id="txtUserameEdit" name="username" />
             <button class="btn btn-warning  mr-2" disabled id="btnEdit">ویرایش کاربر</button>
         </form>
         <form asp-action="DeleteUser">
-            <input type="hidden" id="txtusernamedelete" name="username" />
+            <input type="hidden" id="txtUsernameDelete" name="username" />
             <button class="btn btn-danger mr-2" disabled @*onclick="return confirm('Are you sure?')"*@ id="btnDelete">حذف کاربر</button>
         </form>
     </div>
     <hr />
-    <div id="roles" style="margin-top:20px;">
-    </div>
 </div>
 <script>
     $(function () {
-        $.get('/SiteAdmin/ManageUsers/ChangeUserInRoles', function (data) {
-            $(roles).html(data);
-        })
-
-        $.get('/SiteAdmin/ManageUsers/UsersCombo', function (data) {
-            $(comboUsers).html(data);
-        })
         $(comboUsers).change(function () {
             $(txtusernamechngpass).val($(comboUsers).val());
             $(txtusernameedit).val($(comboUsers).val());

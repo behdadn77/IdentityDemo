@@ -1,0 +1,14 @@
+﻿@model UserRolesViewModel
+<h1>ChangeUserRoles</h1>
+
+<form class="form-group" asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="ChangeUserRoles">
+    <input type="hidden" name="userName" value="User.UserName" />
+    @foreach (var item in Model.Roles)
+    {
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="roles" value="@item.RoleName" @(item.IsInRole ? "checked" : "")>
+            <label class="form-check-label">@item.RoleName</label>
+        </div>
+    }
+    <button>Save Changes</button>
+</form>

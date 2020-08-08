@@ -39,6 +39,9 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string query = "")
         {
+            ViewData["defaultAdminUserName"] = options.Value.AdminUser.EmailAddress;
+            ViewData["defaultAdminRoleName"] = "SiteAdmins";
+
             query = query ?? "";
             List<UserRolesViewModel> userRolesList = new List<UserRolesViewModel>();
             foreach (var user in userManager.Users.Where(x => x.UserName.Contains(query)).Skip((page - 1) * pageSize).Take(pageSize).OrderBy(x => x.UserName).ToList())
@@ -63,12 +66,6 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
 
             return View(userRolesList);
         }
-
-        //[HttpGet]
-        //public IActionResult UsersCombo()
-        //{
-        //    return PartialView(db.Users.ToList().Select(x => x.UserName).ToList());
-        //}
 
         [HttpGet]
         public IActionResult RegisterUser()
@@ -202,43 +199,54 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ChangeUserInRolesAsync()
+        public async Task<IActionResult> ChangeUserRoles(string userName)
         {
-            ViewData["defaultAdminUserName"] = options.Value.AdminUser.EmailAddress;
-            ViewData["defaultAdminRoleName"] = "SiteAdmins";
-            return PartialView();
+
+            var user = await userManager.FindByNameAsync(userName);
+            if (user != null)
+            {
+                UserRolesViewModel userRoles = new UserRolesViewModel()
+                {
+                    User = user
+                };
+                foreach (var role in roleManager.Roles.ToList())
+                {
+                    userRoles.Roles.Add(new UserRoleStatus()
+                    {
+                        RoleName = role.Name,
+                        IsInRole = await userManager.IsInRoleAsync(user, role.Name)
+                    });
+                }
+                return View(userRoles);
+            }
+            return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeUserInRoles(string userid, string rolename, bool status)
+        public async Task<IActionResult> ChangeUserRoles(string userName, List<string> roles)
         {
-            var user = await userManager.FindByIdAsync(userid);
-
-            try
+            var user = await userManager.FindByNameAsync(userName);
+            if (user != null)
             {
-                if (status)
+                foreach (var role in roles)
                 {
-                    await userManager.AddToRoleAsync(user, rolename);
+                    await userManager.AddToRoleAsync(user, role);
                 }
-                else
+                var allRoles = roleManager.Roles.Select(x => x.Name).ToList();
+                foreach (var role in allRoles.Except(roles))
                 {
-                    //default site admin cannot be demoted
-                    if (user == await userManager.FindByNameAsync(options.Value.AdminUser.EmailAddress) &&
-                        rolename == "SiteAdmins")
+                    if (user.UserName == options.Value.AdminUser.EmailAddress && role == "SiteAdmins")
                     {
-                        return Json(false);
+                        TempData["GlobalError"] = "default site admin cannot be demoted";
                     }
                     else
                     {
-                        await userManager.RemoveFromRoleAsync(user, rolename);
+                        await userManager.RemoveFromRoleAsync(user, role);
                     }
                 }
-                return Json(true);
             }
-            catch (Exception)
-            {
-                return Json(false);
-            }
+            TempData["GlobalError"] = "Err";
+            return RedirectToAction("ChangeUserRoles", routeValues: new { userName });
         }
     }
 }

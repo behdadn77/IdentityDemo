@@ -282,16 +282,14 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
                 }
                 catch (Exception)
                 {
-                    TempData["GlobalError"] = $"Failed to assign user to {roleName}";
-                    return RedirectToAction("Index");
+                    return Json($"Failed to assign user to {roleName}");
                 }
             }
             else
             {
                 if (userName == options.Value.AdminUser.EmailAddress && roleName == "SiteAdmins") //default site admin cannot be demoted
                 {
-                    TempData["GlobalError"] = "default site admin cannot be demoted";
-                    return RedirectToAction("Index");
+                    return Json("default site admin cannot be demoted");
                 }
                 else
                 {
@@ -301,12 +299,11 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
                     }
                     catch (Exception)
                     {
-                        TempData["GlobalError"] = $"Failed to remove user from {roleName}";
-                        return RedirectToAction("ChangeUserRoles", routeValues: new { userName });
+                        return Json($"Failed to remove user from {roleName}");
                     }
                 }
             }
-            return Ok();
+            return Json("success");
         }
 
     }

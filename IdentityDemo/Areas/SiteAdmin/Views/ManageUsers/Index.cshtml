@@ -87,7 +87,7 @@
             //if ($(this).attr('allowEnabling') === "allowEnabling") {
             //    $(this).prop('disabled', !($('td').find('#enableRolesCheckbox').prop('checked')))
             //}
-                $(this).prop('disabled', !($('td').find('#enableRolesCheckbox').prop('checked')))
+            $(this).prop('disabled', !($('td').find('#enableRolesCheckbox').prop('checked')))
         })
     })
     $('td').on('change', '.role', function () {
@@ -97,6 +97,12 @@
             userName: $(this).attr('userName'),
             rolename: $(this).attr('roleName'),
             isInRole: isInRole
+        }).done(function (res) {
+            if (res !== "success") {
+                alert(res);
+                //$(this).prop('checked', !($(this).prop('checked')))
+                location.reload();
+            }
         })
     })
 </script>

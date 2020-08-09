@@ -16,7 +16,13 @@
                     <td>نام کاربری</td>
                     <td>نام</td>
                     <td>نام خانوادگی</td>
-                    <td>Roles</td>
+                    <td>
+                        <label>Roles</label>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="enableRolesCheckbox">
+                            <label class="custom-control-label" for="enableRolesCheckbox">Enable Editing</label>
+                        </div>
+                    </td>
                     <td></td>
                 </tr>
             </thead>
@@ -27,15 +33,15 @@
                     <td>@($"{item.User.FirstName}")</td>
                     <td>@($"{item.User.LastName}")</td>
                     <td>
-                            @foreach (var role in item.Roles)
-                            {
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input role" id="@($"{item.User.UserName}{role.RoleName}Checkbox")" @(role.IsInRole ? "checked" : "")
-                                           @(ViewData["defaultAdminUserName"].ToString() == item.User.UserName && role.RoleName == ViewData["defaultAdminRoleName"].ToString() ? "disabled" : "")
-                                           userName="@item.User.UserName" roleName="@role.RoleName" name="roles">
-                                    <label class="custom-control-label" for="@($"{item.User.UserName}{role.RoleName}Checkbox")">@role.RoleName</label>
-                                </div>
-                            }
+                        @foreach (var role in item.Roles)
+                        {
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input role" id="@($"{item.User.UserName}{role.RoleName}Checkbox")" @(role.IsInRole ? "checked" : "")
+                                       @(ViewData["defaultAdminUserName"].ToString() == item.User.UserName && role.RoleName == ViewData["defaultAdminRoleName"].ToString() ? "allowEnabling=''" : "allowEnabling='allowEnabling'")
+                                       userName="@item.User.UserName" roleName="@role.RoleName" name="roles" disabled>
+                                <label class="custom-control-label" for="@($"{item.User.UserName}{role.RoleName}Checkbox")">@role.RoleName</label>
+                            </div>
+                        }
                     </td>
                     <td>
                         <div class="row">
@@ -75,6 +81,15 @@
 </div>
 
 <script>
+    $('td').on('change', '#enableRolesCheckbox', function () {
+        var elements = $('td').find('.role')
+        elements.each(function () {
+            //if ($(this).attr('allowEnabling') === "allowEnabling") {
+            //    $(this).prop('disabled', !($('td').find('#enableRolesCheckbox').prop('checked')))
+            //}
+                $(this).prop('disabled', !($('td').find('#enableRolesCheckbox').prop('checked')))
+        })
+    })
     $('td').on('change', '.role', function () {
         var isInRole = $(this).prop('checked');
 

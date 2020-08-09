@@ -27,33 +27,31 @@
                     <td>@($"{item.User.FirstName}")</td>
                     <td>@($"{item.User.LastName}")</td>
                     <td>
-                        <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="ChangeUserRoles" method="post">
-                            <input type="hidden" name="userName" value="@item.User.UserName" />
                             @foreach (var role in item.Roles)
                             {
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="@($"{item.User.UserName}{role.RoleName}Checkbox")" @(role.IsInRole ? "checked" : "")
+                                    <input type="checkbox" class="custom-control-input role" id="@($"{item.User.UserName}{role.RoleName}Checkbox")" @(role.IsInRole ? "checked" : "")
                                            @(ViewData["defaultAdminUserName"].ToString() == item.User.UserName && role.RoleName == ViewData["defaultAdminRoleName"].ToString() ? "disabled" : "")
-                                           name="roles" value="@role.RoleName">
+                                           userName="@item.User.UserName" roleName="@role.RoleName" name="roles">
                                     <label class="custom-control-label" for="@($"{item.User.UserName}{role.RoleName}Checkbox")">@role.RoleName</label>
                                 </div>
                             }
-                            <button class="btn btn-warning  mr-2">ویرایش سطح دسترسی</button>
-                        </form>
                     </td>
                     <td>
-                        <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="EditUser" method="get">
-                            <input type="hidden" name="userName" value="@item.User.UserName" />
-                            <button class="btn btn-warning  mr-2">ویرایش کاربر</button>
-                        </form>
-                        <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="DeleteUser" method="get">
-                            <input type="hidden" name="userName" />
-                            <button class="btn btn-danger mr-2" onclick="return confirm('Are you sure?')">حذف کاربر</button>
-                        </form>
-                        <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="ChangePass" method="get">
-                            <input type="hidden" name="userUame" />
-                            <button class="btn btn-warning mr-2">تعویض رمز</button>
-                        </form>
+                        <div class="row">
+                            <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="EditUser" method="get">
+                                <input type="hidden" name="userName" value="@item.User.UserName" />
+                                <button class="btn btn-warning mr-2">ویرایش کاربر</button>
+                            </form>
+                            <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="DeleteUser" method="get">
+                                <input type="hidden" name="userName" />
+                                <button class="btn btn-danger mr-2" onclick="return confirm('Are you sure?')">حذف کاربر</button>
+                            </form>
+                            <form asp-area="SiteAdmin" asp-controller="ManageUsers" asp-action="ChangePass" method="get">
+                                <input type="hidden" name="userUame" />
+                                <button class="btn btn-warning mr-2">تعویض رمز</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             }
@@ -77,4 +75,13 @@
 </div>
 
 <script>
+    $('td').on('change', '.role', function () {
+        var isInRole = $(this).prop('checked');
+
+        $.post('/SiteAdmin/manageUsers/AddRemoveUserRoleOnCheckboxEvent', {
+            userName: $(this).attr('userName'),
+            rolename: $(this).attr('roleName'),
+            isInRole: isInRole
+        })
+    })
 </script>

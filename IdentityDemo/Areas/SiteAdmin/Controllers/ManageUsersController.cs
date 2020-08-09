@@ -230,7 +230,15 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
             {
                 foreach (var role in roles) //note: Don't use lambda ForEach
                 {
-                    await userManager.AddToRoleAsync(user, role);
+                    try
+                    {
+                        await userManager.AddToRoleAsync(user, role);
+                    }
+                    catch (Exception)
+                    {
+                        TempData["GlobalError"] = $"Failed to assign user to {role}";
+                        return RedirectToAction("ChangeUserRoles", routeValues: new { userName });
+                    }
                 }
                 var allRoles = roleManager.Roles.Select(x => x.Name).ToList();
                 foreach (var role in allRoles.Except(roles))
@@ -241,12 +249,65 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
                     }
                     else
                     {
-                        await userManager.RemoveFromRoleAsync(user, role);
+                        try
+                        {
+                            await userManager.RemoveFromRoleAsync(user, role);
+                        }
+                        catch (Exception)
+                        {
+                            TempData["GlobalError"] = $"Failed to remove user from {role}";
+                            return RedirectToAction("ChangeUserRoles", routeValues: new { userName });
+                        }
                     }
                 }
             }
-            TempData["GlobalError"] = "Err";
-            return RedirectToAction("ChangeUserRoles", routeValues: new { userName });
+            else
+            {
+                TempData["GlobalError"] = "User Doesn't exist";
+                return RedirectToAction("ChangeUserRoles", routeValues: new { userName });
+            }
+            return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddRemoveUserRoleOnCheckboxEvent(string userName, string roleName, bool isInRole)
+        {
+            var user = await userManager.FindByNameAsync(userName);
+
+            if (isInRole)
+            {
+                try
+                {
+                    await userManager.AddToRoleAsync(user, roleName);
+                }
+                catch (Exception)
+                {
+                    TempData["GlobalError"] = $"Failed to assign user to {roleName}";
+                    return RedirectToAction("Index");
+                }
+            }
+            else
+            {
+                if (userName == options.Value.AdminUser.EmailAddress && roleName == "SiteAdmins") //default site admin cannot be demoted
+                {
+                    TempData["GlobalError"] = "default site admin cannot be demoted";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    try
+                    {
+                        await userManager.RemoveFromRoleAsync(user, roleName);
+                    }
+                    catch (Exception)
+                    {
+                        TempData["GlobalError"] = $"Failed to remove user from {roleName}";
+                        return RedirectToAction("ChangeUserRoles", routeValues: new { userName });
+                    }
+                }
+            }
+            return Ok();
+        }
+
     }
 }

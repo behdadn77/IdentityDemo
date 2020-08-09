@@ -16,9 +16,6 @@ namespace IdentityDemo.Data
     {
         public static async Task Initialize(IServiceProvider serviceProvider, IdentityProperties identityProperties)
         {
-            //var userManager = serviceProvider.GetRequiredService<CustomUserManager>();
-            //userManager.PasswordHasher = new CustomPasswordHasher();
-
             var userManager = serviceProvider.GetRequiredService<CustomUserManager>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 

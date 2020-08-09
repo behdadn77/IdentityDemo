@@ -41,7 +41,8 @@ namespace IdentityDemo
 
             services.Configure<IdentityProperties>(Configuration.GetSection("IdentityProperties"));
 
-            //Identity configurations (can be separated in IdentityHostingStartup)
+            #region Identity configurations 
+            //(can be separated in IdentityHostingStartup)
             services.AddDbContext<DBContext>(options =>
                   options.UseSqlServer(
                       Configuration.GetConnectionString("DBContextConnection")));
@@ -51,7 +52,7 @@ namespace IdentityDemo
                 options.SignIn.RequireConfirmedAccount = false;
 
                 // Password configurations note: must change DataValidations for ViewModels
-                options.Password.RequireDigit = false; 
+                options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 0;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
@@ -72,13 +73,20 @@ namespace IdentityDemo
                 x.AddPolicy("ContentManagerPolicy", y => y.RequireRole("ContentManagers"));
             });
 
-            //
+            #endregion
+
+            #region Cookie
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = $"/Identity/Account/Login";
                 options.LogoutPath = $"/Identity/Account/Logout";
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+
+                //options.Cookie.HttpOnly = true;
+                //options.ExpireTimeSpan = TimeSpan.FromDays(500);
+                //options.SlidingExpiration = true;
             });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

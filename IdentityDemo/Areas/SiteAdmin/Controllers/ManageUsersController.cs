@@ -273,37 +273,40 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
         public async Task<IActionResult> AddRemoveUserRoleOnCheckboxEvent(string userName, string roleName, bool isInRole)
         {
             var user = await userManager.FindByNameAsync(userName);
-
-            if (isInRole)
+            if (user != null)
             {
-                try
-                {
-                    await userManager.AddToRoleAsync(user, roleName);
-                }
-                catch (Exception)
-                {
-                    return Json($"Failed to assign user to {roleName}");
-                }
-            }
-            else
-            {
-                if (userName == options.Value.AdminUser.EmailAddress && roleName == "SiteAdmins") //default site admin cannot be demoted
-                {
-                    return Json("default site admin cannot be demoted");
-                }
-                else
+                if (isInRole)
                 {
                     try
                     {
-                        await userManager.RemoveFromRoleAsync(user, roleName);
+                        await userManager.AddToRoleAsync(user, roleName);
                     }
                     catch (Exception)
                     {
-                        return Json($"Failed to remove user from {roleName}");
+                        return Json($"Failed to assign user to {roleName}");
                     }
                 }
+                else
+                {
+                    if (userName == options.Value.AdminUser.EmailAddress && roleName == "SiteAdmins") //default site admin cannot be demoted
+                    {
+                        return Json("default site admin cannot be demoted");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            await userManager.RemoveFromRoleAsync(user, roleName);
+                        }
+                        catch (Exception)
+                        {
+                            return Json($"Failed to remove user from {roleName}");
+                        }
+                    }
+                }
+                return Json("success");
             }
-            return Json("success");
+            return Json("User doesn't exist");
         }
 
     }

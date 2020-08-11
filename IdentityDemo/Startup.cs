@@ -29,6 +29,7 @@ namespace IdentityDemo
             var builder = new ConfigurationBuilder();
             builder.SetBasePath(env.ContentRootPath);
             builder.AddJsonFile("identitysettings.json", optional: false, reloadOnChange: false);
+            builder.AddJsonFile("emailsettings.json", optional: false, reloadOnChange: false);
             builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             Configuration = builder.Build();
         }
@@ -41,6 +42,7 @@ namespace IdentityDemo
             services.AddControllersWithViews();
 
             services.Configure<IdentityDefaultOptions>(Configuration.GetSection("IdentityProperties"));
+            services.Configure<EmailSenderOptions>(Configuration.GetSection("EmailProperties"));
 
             #region Identity configurations 
             //(can be separated in IdentityHostingStartup)
@@ -94,7 +96,7 @@ namespace IdentityDemo
             // using Microsoft.AspNetCore.Identity.UI.Services;
             // using WebPWrecover.Services;
             services.AddTransient<IEmailSender, EmailSender>();
-            services.Configure<AuthMessageSenderOptions>(Configuration);
+            services.Configure<EmailSenderOptions>(Configuration);
             #endregion
         }
 

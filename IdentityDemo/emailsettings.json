@@ -1,0 +1,10 @@
+{
+  "EmailProperties": {
+    "SenderEmailAddress": "",
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "EnableSsl": true,
+    "UserName": "",
+    "Password": ""
+  }
+}

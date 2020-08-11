@@ -4,42 +4,39 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace IdentityDemo.Services
 {
-    public class EmailSender :IEmailSender
+    public class EmailSender : IEmailSender
     {
-        public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor)
+        public EmailSender(IOptions<EmailSenderOptions> optionsAccessor)
         {
             Options = optionsAccessor.Value;
         }
 
-        public AuthMessageSenderOptions Options { get; } //set only via Secret Manager
+        public EmailSenderOptions Options { get; } //set only via Secret Manager
 
-        public Task SendEmailAsync(string email, string subject, string message)
+        public Task SendEmailAsync(string email, string subject, string body)
         {
-            return Execute(Options.SendGridKey, subject, message, email);
+            return Execute(Options, subject, body, email, true);
         }
 
-        public Task Execute(string apiKey, string subject, string message, string email)
+        public Task Execute(EmailSenderOptions options, string subject, string body, string email, bool isBodyHtml)
         {
-            //var client = new SendGridClient(apiKey);
-            //var msg = new SendGridMessage()
-            //{
-            //    From = new EmailAddress("Joe@contoso.com", Options.SendGridUser),
-            //    Subject = subject,
-            //    PlainTextContent = message,
-            //    HtmlContent = message
-            //};
-            //msg.AddTo(new EmailAddress(email));
-
-            //// Disable click tracking.
-            //// See https://sendgrid.com/docs/User_Guide/Settings/tracking.html
-            //msg.SetClickTracking(false, false);
-
-            //return client.SendEmailAsync(msg);
-            throw new NotImplementedException();
+            MailMessage msg = new MailMessage(options.SenderEmailAddress, email);
+            msg.Subject = subject;
+            msg.Body = body;
+            msg.IsBodyHtml = isBodyHtml;
+            using (SmtpClient client = new SmtpClient())// "smtp.gmail.com", 465)
+            {
+                client.Host = options.Host;
+                client.Port = options.Port;
+                client.EnableSsl = options.EnableSsl;
+                client.Credentials = new System.Net.NetworkCredential(options.UserName, options.Password);
+                return client.SendMailAsync(msg);
+            }
         }
     }
 }

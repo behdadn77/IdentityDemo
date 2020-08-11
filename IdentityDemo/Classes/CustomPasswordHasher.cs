@@ -10,16 +10,11 @@ namespace IdentityDemo.Classes
 {
     public class CustomPasswordHasher : PasswordHasher<ApplicationUser>
     {
-        private string EncryptPassword(string password) 
+        private string EncryptPassword(string password)
         {
             byte[] b = System.Text.Encoding.UTF8.GetBytes(password);
-            for (int i = 0; i < 3; i++)
-            {
-                var hashing = SHA512.Create();
-                b = hashing.ComputeHash(b);
-                int index = (b[2] + 1) / 4;
-                b[index] = Convert.ToByte((b[index] * 3) % 256);
-            }
+            var hashing = SHA512.Create();
+            b = hashing.ComputeHash(b);
             return "CustomHashedPass" + Convert.ToBase64String(b);
         }
 

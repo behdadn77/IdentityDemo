@@ -22,10 +22,10 @@ namespace IdentityDemo.Areas.SiteAdmin.Controllers
         private readonly DBContext db;
         private readonly CustomUserManager userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        private readonly IOptions<IdentityProperties> options;
+        private readonly IOptions<IdentityDefaultOptions> options;
         private readonly ILogger<ManageUsersController> logger;
 
-        public ManageUsersController(DBContext db, CustomUserManager userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityProperties> options,
+        public ManageUsersController(DBContext db, CustomUserManager userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityDefaultOptions> options,
             ILogger<ManageUsersController> logger)
         {
             this.db = db;

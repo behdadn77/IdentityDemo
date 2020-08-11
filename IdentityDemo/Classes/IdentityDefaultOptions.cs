@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace IdentityDemo.Classes
 {
-    public class IdentityProperties
+    public class IdentityDefaultOptions
     {
         public AdminUser AdminUser { get; set; }
     }

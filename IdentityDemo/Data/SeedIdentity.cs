@@ -13,7 +13,7 @@ namespace IdentityDemo.Data
 {
     public class SeedIdentity
     {
-        public static async Task Initialize(IServiceProvider serviceProvider, IdentityProperties identityProperties)
+        public static async Task Initialize(IServiceProvider serviceProvider, IdentityDefaultOptions identityProperties)
         {
             var userManager = serviceProvider.GetRequiredService<CustomUserManager>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();

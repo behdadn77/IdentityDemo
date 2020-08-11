@@ -40,7 +40,7 @@ namespace IdentityDemo
         {
             services.AddControllersWithViews();
 
-            services.Configure<IdentityProperties>(Configuration.GetSection("IdentityProperties"));
+            services.Configure<IdentityDefaultOptions>(Configuration.GetSection("IdentityProperties"));
 
             #region Identity configurations 
             //(can be separated in IdentityHostingStartup)
@@ -100,7 +100,7 @@ namespace IdentityDemo
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider,
-            IOptions<IdentityProperties> identityPropertiesOptions)
+            IOptions<IdentityDefaultOptions> identityPropertiesOptions)
         {
 
             if (env.IsDevelopment())

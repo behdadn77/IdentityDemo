@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using static IdentityDemo.Models.ViewModels.IdentityPropertiesViewModel;
 
 namespace IdentityDemo.Areas.SiteAdmin.Controllers
 {

@@ -13,7 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IdentityDemo.Models.ViewModels;
-using static IdentityDemo.Models.ViewModels.IdentityPropertiesViewModel;
 using Microsoft.Extensions.Options;
 using IdentityDemo.Classes;
 
@@ -97,6 +96,7 @@ namespace IdentityDemo
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage(); //added
             }
             else
             {

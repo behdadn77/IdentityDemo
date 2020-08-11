@@ -63,10 +63,8 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
                 pageHandler: null,
                 values: new { userId = userId, code = code },
                 protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                Input.Email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            await _emailSender.SendEmailAsync(Input.Email, "آدرس ایمیل خود را تائید کنید",
+                         $"برای تایید آدرس ایمیل خود  <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>اینجا را کلیک کنید</a>.");
 
             ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             return Page();

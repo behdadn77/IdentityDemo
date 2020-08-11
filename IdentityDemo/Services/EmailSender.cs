@@ -21,6 +21,7 @@ namespace IdentityDemo.Services
         public Task SendEmailAsync(string email, string subject, string body)
         {
             return Execute(Options, subject, body, email, true);
+            //return Task.CompletedTask; //For Testing
         }
 
         public Task Execute(EmailSenderOptions options, string subject, string body, string email, bool isBodyHtml)

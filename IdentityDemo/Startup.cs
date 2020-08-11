@@ -15,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using IdentityDemo.Models.ViewModels;
 using Microsoft.Extensions.Options;
 using IdentityDemo.Classes;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using IdentityDemo.Services;
 
 namespace IdentityDemo
 {
@@ -85,6 +87,14 @@ namespace IdentityDemo
                 //options.ExpireTimeSpan = TimeSpan.FromDays(500);
                 //options.SlidingExpiration = true;
             });
+            #endregion
+
+            #region EmailSender
+            // requires
+            // using Microsoft.AspNetCore.Identity.UI.Services;
+            // using WebPWrecover.Services;
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
             #endregion
         }
 

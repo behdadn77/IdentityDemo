@@ -56,14 +56,21 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
             [Display(Name = "نام خانوادگی")]
             public string LastName { get; set; }
 
-            [Required]
             [EmailAddress]
             public string Email { get; set; }
         }
 
-        public IActionResult OnGetAsync()
+        public void OnGetAsync(string email, string firstName, string lastName, string providerDisplayName, string returnUrl = null)
         {
-            return RedirectToPage("./Login");
+            Input = new InputModel()
+            {
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName
+            };
+
+            ProviderDisplayName = providerDisplayName;
+            ReturnUrl = returnUrl;
         }
 
         public IActionResult OnPost(string provider, string returnUrl = null)
@@ -104,11 +111,10 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
             else
             {
                 // If the user does not have an account, then ask the user to create an account.
+                ReturnUrl = returnUrl;
                 ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    Input.Email = info.Principal.FindFirstValue(ClaimTypes.Email);
-
                     var user = new ApplicationUser
                     {
                         UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
@@ -146,7 +152,14 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
                             {
                                 await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
 
-                                return LocalRedirect(returnUrl);
+                                return RedirectToPage("./ExternalLogin", new
+                                {
+                                    Email = user.Email,
+                                    FirstName = user.FirstName,
+                                    LastName = user.LastName,
+                                    ProviderDisplayName,
+                                    ReturnUrl,
+                                });
                             }
                         }
                     }
@@ -158,6 +171,31 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
                 ErrorMessage = "Error loading external login information.";
                 return RedirectToPage("./Login");
             }
+        }
+
+        public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+
+            if (ModelState.IsValid)
+            {
+                //update name info
+                var user = await _userManager.GetUserAsync(this.User);
+                if (user != null)
+                {
+                    user.FirstName = Input.FirstName;
+                    user.LastName = Input.LastName;
+
+                    var result = await _userManager.UpdateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return LocalRedirect(returnUrl);
+                    }
+                }
+            }
+
+            ReturnUrl = returnUrl;
+            return Page();
         }
     }
 }

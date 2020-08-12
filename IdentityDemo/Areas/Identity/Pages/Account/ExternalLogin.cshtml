@@ -10,8 +10,6 @@
 
 <p id="external-login-description" class="text-info">
     You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
-    Please enter an email address for this site below and click the Register button to finish
-    logging in.
 </p>
 
 <div class="row">
@@ -33,7 +31,7 @@
                 <input asp-for="Input.LastName" class="form-control"/>
                 <span asp-validation-for="Input.LastName" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary">Save and Continue</button>
         </form>
     </div>
 </div>

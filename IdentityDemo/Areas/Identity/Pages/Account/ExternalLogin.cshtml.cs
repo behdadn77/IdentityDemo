@@ -60,17 +60,21 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
             public string Email { get; set; }
         }
 
-        public void OnGetAsync(string email, string firstName, string lastName, string providerDisplayName, string returnUrl = null)
+        public async Task OnGetAsync(string providerDisplayName, string returnUrl = null)
         {
-            Input = new InputModel()
-            {
-                Email = email,
-                FirstName = firstName,
-                LastName = lastName
-            };
-
             ProviderDisplayName = providerDisplayName;
             ReturnUrl = returnUrl;
+
+            var user = await _userManager.GetUserAsync(this.User);
+            if (user != null)
+            {
+                Input = new InputModel()
+                {
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                };
+            }
         }
 
         public IActionResult OnPost(string provider, string returnUrl = null)
@@ -153,9 +157,6 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
                                 return RedirectToPage("./ExternalLogin", new
                                 {
-                                    Email = user.Email,
-                                    FirstName = user.FirstName,
-                                    LastName = user.LastName,
                                     ProviderDisplayName,
                                     ReturnUrl,
                                 });

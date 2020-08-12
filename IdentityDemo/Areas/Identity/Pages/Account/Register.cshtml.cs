@@ -47,6 +47,12 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            [Display(Name = "نام")]
+            public string FirstName { get; set; }
+
+            [Display(Name = "نام خانوادگی")]
+            public string LastName { get; set; }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
@@ -76,7 +82,7 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

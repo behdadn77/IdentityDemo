@@ -43,6 +43,8 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
         public string ProviderDisplayName { get; set; }
 
+        public string ProviderEmail { get; set; }
+
         public string ReturnUrl { get; set; }
 
         [TempData]
@@ -50,6 +52,12 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            [Display(Name = "نام")]
+            public string FirstName { get; set; }
+
+            [Display(Name = "نام خانوادگی")]
+            public string LastName { get; set; }
+
             [Required]
             [EmailAddress]
             public string Email { get; set; }
@@ -70,11 +78,12 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
+            Input = new InputModel();
             returnUrl = returnUrl ?? Url.Content("~/");
             if (remoteError != null)
             {
                 ErrorMessage = $"Error from external provider: {remoteError}";
-                return RedirectToPage("./Login", new {ReturnUrl = returnUrl });
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
@@ -84,7 +93,7 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
             }
 
             // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor : true);
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
@@ -101,11 +110,25 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
                 ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    Input = new InputModel
-                    {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    };
+                    ProviderEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
+                    Input.Email = info.Principal.FindFirstValue(ClaimTypes.Email);
                 }
+                else
+                {
+                    ErrorMessage = "Error loading external login information.";
+                    return RedirectToPage("./Register");
+                }
+
+                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.GivenName))
+                {
+                    Input.FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+                }
+
+                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Surname))
+                {
+                    Input.LastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
+                }
+
                 return Page();
             }
         }
@@ -123,7 +146,9 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
+                //var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email }; Don't use Input Email if email confirmation is disabled
+                var user = new ApplicationUser { UserName = ProviderEmail, Email = ProviderEmail, FirstName = Input.FirstName, LastName = Input.LastName };
+                user.EmailConfirmed = true; //email confirmation is not required when using the email address provided by external login
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
@@ -133,23 +158,23 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
-                        var userId = await _userManager.GetUserIdAsync(user);
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = userId, code = code },
-                            protocol: Request.Scheme);
+                        //var userId = await _userManager.GetUserIdAsync(user);
+                        //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        //var callbackUrl = Url.Page(
+                        //    "/Account/ConfirmEmail",
+                        //    pageHandler: null,
+                        //    values: new { area = "Identity", userId = userId, code = code },
+                        //    protocol: Request.Scheme);
 
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                        //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                        //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                         // If account confirmation is required, we need to show the link if we don't have a real email sender
-                        if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                        {
-                            return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
-                        }
+                        //if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                        //{
+                        //    return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
+                        //}
 
                         await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
 

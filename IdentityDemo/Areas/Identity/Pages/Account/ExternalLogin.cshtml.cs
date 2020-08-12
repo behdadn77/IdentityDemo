@@ -43,8 +43,6 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
         public string ProviderDisplayName { get; set; }
 
-        public string ProviderEmail { get; set; }
-
         public string ReturnUrl { get; set; }
 
         [TempData]
@@ -106,90 +104,60 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
             else
             {
                 // If the user does not have an account, then ask the user to create an account.
-                ReturnUrl = returnUrl;
                 ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    ProviderEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
                     Input.Email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                }
-                else
-                {
-                    ErrorMessage = "Error loading external login information.";
-                    return RedirectToPage("./Register");
-                }
 
-                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.GivenName))
-                {
-                    Input.FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
-                }
+                    var user = new ApplicationUser
+                    {
+                        UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                    }; //Don't use Input Email if email confirmation is disabled
 
-                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Surname))
-                {
-                    Input.LastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
-                }
+                    if (info.Principal.HasClaim(c => c.Type == ClaimTypes.GivenName))
+                    {
+                        user.FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+                    }
 
-                return Page();
-            }
-        }
+                    if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Surname))
+                    {
+                        user.LastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
+                    }
 
-        public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
-        {
-            returnUrl = returnUrl ?? Url.Content("~/");
-            // Get the information about the user from the external login provider
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                ErrorMessage = "Error loading external login information during confirmation.";
-                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
-            }
+                    user.EmailConfirmed = true; //email confirmation is not required when using the email address provided by external login
 
-            if (ModelState.IsValid)
-            {
-                //var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email }; Don't use Input Email if email confirmation is disabled
-                var user = new ApplicationUser { UserName = ProviderEmail, Email = ProviderEmail, FirstName = Input.FirstName, LastName = Input.LastName };
-                user.EmailConfirmed = true; //email confirmation is not required when using the email address provided by external login
-
-                var result = await _userManager.CreateAsync(user);
-                if (result.Succeeded)
-                {
-                    result = await _userManager.AddLoginAsync(user, info);
-                    if (result.Succeeded)
+                    var res = await _userManager.CreateAsync(user);
+                    if (res.Succeeded)
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
-                        //var userId = await _userManager.GetUserIdAsync(user);
-                        //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        //var callbackUrl = Url.Page(
-                        //    "/Account/ConfirmEmail",
-                        //    pageHandler: null,
-                        //    values: new { area = "Identity", userId = userId, code = code },
-                        //    protocol: Request.Scheme);
+                        //login
+                        var loginInfo = await _signInManager.GetExternalLoginInfoAsync();
+                        if (loginInfo == null)
+                        {
+                            ErrorMessage = "Error loading external login information during confirmation.";
+                            return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                        }
+                        else
+                        {
+                            res = await _userManager.AddLoginAsync(user, loginInfo);
+                            if (res.Succeeded)
+                            {
+                                await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
 
-                        //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                        // If account confirmation is required, we need to show the link if we don't have a real email sender
-                        //if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                        //{
-                        //    return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
-                        //}
-
-                        await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-
-                        return LocalRedirect(returnUrl);
+                                return LocalRedirect(returnUrl);
+                            }
+                        }
+                    }
+                    foreach (var error in res.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                ErrorMessage = "Error loading external login information.";
+                return RedirectToPage("./Login");
             }
-
-            ProviderDisplayName = info.ProviderDisplayName;
-            ReturnUrl = returnUrl;
-            return Page();
         }
     }
 }

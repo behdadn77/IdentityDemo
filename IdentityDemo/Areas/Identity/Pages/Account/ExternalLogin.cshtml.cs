@@ -83,7 +83,6 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
-            Input = new InputModel();
             returnUrl = returnUrl ?? Url.Content("~/");
             if (remoteError != null)
             {
@@ -160,6 +159,14 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
                                     ProviderDisplayName,
                                     ReturnUrl,
                                 });
+
+                                //Input = new InputModel()
+                                //{
+                                //    Email = user.Email,
+                                //    FirstName = user.FirstName,
+                                //    LastName = user.LastName
+                                //};
+                                //return Page();
                             }
                         }
                     }

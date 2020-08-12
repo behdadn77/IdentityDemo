@@ -31,6 +31,7 @@ namespace IdentityDemo
             builder.AddJsonFile("identitysettings.json", optional: false, reloadOnChange: false);
             builder.AddJsonFile("emailsettings.json", optional: false, reloadOnChange: false);
             builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            builder.AddUserSecrets<Program>();
             Configuration = builder.Build();
         }
 
@@ -69,6 +70,17 @@ namespace IdentityDemo
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<DBContext>()
                 .AddUserManager<CustomUserManager>(); //CustomUserManager class Inherited From UserManger<ApplicationUser> remove if not necessary 
+
+            //external auth
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    IConfigurationSection googleAuthNSection =
+                        Configuration.GetSection("Authentication:Google");
+
+                    options.ClientId = googleAuthNSection["ClientId"];
+                    options.ClientSecret = googleAuthNSection["ClientSecret"];
+                });
 
             services.AddAuthorization(x =>
             {

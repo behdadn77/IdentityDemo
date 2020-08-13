@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using IdentityDemo.Classes;
+using IdentityDemo.Services;
 
 namespace IdentityDemo.Areas.Identity.Pages.Account
 {
@@ -20,14 +21,17 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly CustomUserManager _userManager;
+        private readonly ReCaptchav3Service _reCaptchav3;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, 
+        public LoginModel(SignInManager<ApplicationUser> signInManager,
             ILogger<LoginModel> logger,
-            CustomUserManager userManager)
+            CustomUserManager userManager,
+            ReCaptchav3Service reCaptchav3)
         {
             _userManager = userManager;
+            _reCaptchav3 = reCaptchav3;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -54,6 +58,9 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
+
+            [Required]
+            public string ReCaptchaToken { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -76,6 +83,12 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
+
+            var res = await _reCaptchav3.Verify(Input.ReCaptchaToken);
+            if (res.Success)
+            {
+                Console.WriteLine($"fuck yeah {res.Score}");
+            }
 
             if (ModelState.IsValid)
             {

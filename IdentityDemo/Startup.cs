@@ -67,6 +67,10 @@ namespace IdentityDemo
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedAccount = true;
 
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+
             })
                 .AddRoles<IdentityRole>()
                 .AddDefaultUI()
@@ -105,13 +109,9 @@ namespace IdentityDemo
             });
             #endregion
 
-            #region EmailSender
-            // requires
-            // using Microsoft.AspNetCore.Identity.UI.Services;
-            // using WebPWrecover.Services;
-            services.AddTransient<IEmailSender, EmailSender>();
-            services.Configure<EmailSenderOptions>(Configuration);
-            #endregion
+            services.AddTransient<IEmailSender, EmailSender>(); // requires using Microsoft.AspNetCore.Identity.UI.Services; using WebPWrecover.Services;
+
+            services.AddTransient<ReCaptchav3Service>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

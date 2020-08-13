@@ -6,6 +6,7 @@
         grecaptcha.execute('@options.Value.SiteKey', { action: 'homepage' }).then(function (token) {
             // Add your logic to submit to your backend server here.
             console.log(token)
+            $('#Input_ReCaptchaToken').val(token);
         });
     });
 </script>

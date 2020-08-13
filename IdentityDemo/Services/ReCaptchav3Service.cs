@@ -17,32 +17,32 @@ namespace IdentityDemo.Services
         {
             this.options = options;
         }
-        public virtual async Task<GoogleRespo> RecVer(string token)
+        public virtual async Task<GoogleResponse> Verify(string token)
         {
             GoogleReCaptchaData reCaptchaData = new GoogleReCaptchaData()
             {
-                response = token,
-                secret = options.Value.SecretKey
+                Response = token,
+                Secret = options.Value.SecretKey
             };
             HttpClient client = new HttpClient();
             var response = 
-                await client.GetStringAsync($"https://www.google.com/recaptcha/api/siteverify?secret={reCaptchaData.secret}&response={reCaptchaData.response}");
-            var capresp = JsonConvert.DeserializeObject<GoogleRespo>(response);
+                await client.GetStringAsync($"https://www.google.com/recaptcha/api/siteverify?secret={reCaptchaData.Secret}&response={reCaptchaData.Response}");
+            var capresp = JsonConvert.DeserializeObject<GoogleResponse>(response);
             return capresp;
         }
     }
     public class GoogleReCaptchaData
     {
-        public string response { get; set; }
-        public string  secret { get; set; }
+        public string Response { get; set; }
+        public string  Secret { get; set; }
     }
 
-    public class GoogleRespo
+    public class GoogleResponse
     {
-        public string success { get; set; }
-        public string score { get; set; }
-        public string action { get; set; }
-        public DateTime challenge_ts { get; set; }
-        public string hostname { get; set; }
+        public bool Success { get; set; }
+        public Double Score { get; set; }
+        public string Action { get; set; }
+        public DateTime Challenge_ts { get; set; }
+        public string Hostname { get; set; }
     }
 }

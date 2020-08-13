@@ -2,12 +2,10 @@
 @inject IOptions<IdentityDemo.Options.ReCaptchaOptions> options
 <script src="https://www.google.com/recaptcha/api.js?render=@options.Value.SiteKey"></script>
 <script>
-    function onClick(e) {
-        e.preventDefault();
-        grecaptcha.ready(function () {
-            grecaptcha.execute('@options.Value.SiteKey', { action: 'submit' }).then(function (token) {
-                // Add your logic to submit to your backend server here.
-            });
+    grecaptcha.ready(function () {
+        grecaptcha.execute('@options.Value.SiteKey', { action: 'homepage' }).then(function (token) {
+            // Add your logic to submit to your backend server here.
+            console.log(token)
         });
-    }
+    });
 </script>

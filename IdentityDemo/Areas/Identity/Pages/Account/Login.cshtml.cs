@@ -21,17 +21,14 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly CustomUserManager _userManager;
-        private readonly ReCaptchav3Service _reCaptchav3;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
         public LoginModel(SignInManager<ApplicationUser> signInManager,
             ILogger<LoginModel> logger,
-            CustomUserManager userManager,
-            ReCaptchav3Service reCaptchav3)
+            CustomUserManager userManager)
         {
             _userManager = userManager;
-            _reCaptchav3 = reCaptchav3;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -83,12 +80,6 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
-
-            var res = await _reCaptchav3.Verify(Input.ReCaptchaToken);
-            if (res.Success)
-            {
-                Console.WriteLine($"fuck yeah {res.Score}");
-            }
 
             if (ModelState.IsValid)
             {

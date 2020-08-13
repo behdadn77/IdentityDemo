@@ -1,4 +1,5 @@
 ﻿using IdentityDemo.Classes;
+using IdentityDemo.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 using System;

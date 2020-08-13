@@ -6,6 +6,7 @@ using IdentityDemo.Classes;
 using IdentityDemo.Data;
 using IdentityDemo.Models;
 using IdentityDemo.Models.ViewModels;
+using IdentityDemo.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

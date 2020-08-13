@@ -14,9 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IdentityDemo.Models.ViewModels;
 using Microsoft.Extensions.Options;
-using IdentityDemo.Classes;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using IdentityDemo.Services;
+using IdentityDemo.Options;
+using IdentityDemo.Classes;
 
 namespace IdentityDemo
 {

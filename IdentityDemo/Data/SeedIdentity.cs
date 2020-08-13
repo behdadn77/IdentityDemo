@@ -1,6 +1,7 @@
 ﻿using IdentityDemo.Classes;
 using IdentityDemo.Models;
 using IdentityDemo.Models.ViewModels;
+using IdentityDemo.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

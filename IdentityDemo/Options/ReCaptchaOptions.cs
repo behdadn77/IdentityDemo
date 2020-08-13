@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace IdentityDemo.Options
 {
-    public class ReCaptchaOptions
+    public class ReCaptchav3Options
     {
         public string SiteKey { get; set; }
         public string SecretKey { get; set; }

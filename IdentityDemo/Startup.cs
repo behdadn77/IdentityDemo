@@ -45,7 +45,7 @@ namespace IdentityDemo
 
             services.Configure<IdentityDefaultOptions>(Configuration.GetSection("IdentityProperties"));
             services.Configure<EmailSenderOptions>(Configuration.GetSection("EmailProperties"));
-            services.Configure<ReCaptchaOptions>(Configuration.GetSection("reCAPTCHA"));
+            services.Configure<ReCaptchav3Options>(Configuration.GetSection("ReCaptchav3"));
 
             #region Identity configurations 
             //(can be separated in IdentityHostingStartup)

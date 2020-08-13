@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using IdentityDemo.Classes;
 using IdentityDemo.Services;
+using reCAPTCHA.AspNetCore.Attributes;
+using reCAPTCHA.AspNetCore;
 
 namespace IdentityDemo.Areas.Identity.Pages.Account
 {
@@ -21,14 +23,17 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly CustomUserManager _userManager;
+        private readonly IRecaptchaService recaptchaService;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
         public LoginModel(SignInManager<ApplicationUser> signInManager,
             ILogger<LoginModel> logger,
-            CustomUserManager userManager)
+            CustomUserManager userManager,
+            IRecaptchaService recaptchaService)
         {
             _userManager = userManager;
+            this.recaptchaService = recaptchaService;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -55,9 +60,6 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
 
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
-
-            [Required]
-            public string ReCaptchaToken { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -80,6 +82,10 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
+
+            var recaptcha = await recaptchaService.Validate(Request);
+            if (!recaptcha.success || recaptcha.score != 0 && recaptcha.score < 5)
+                ModelState.AddModelError("Recaptcha","reCAPTCHA failed!");
 
             if (ModelState.IsValid)
             {

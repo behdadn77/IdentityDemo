@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using IdentityDemo.Services;
 using IdentityDemo.Options;
 using IdentityDemo.Classes;
+using reCAPTCHA.AspNetCore;
 
 namespace IdentityDemo
 {
@@ -45,6 +46,7 @@ namespace IdentityDemo
 
             services.Configure<IdentityDefaultOptions>(Configuration.GetSection("IdentityProperties"));
             services.Configure<EmailSenderOptions>(Configuration.GetSection("EmailProperties"));
+            services.AddRecaptcha(Configuration.GetSection("RecaptchaSettings"));
 
             #region Identity configurations 
             //(can be separated in IdentityHostingStartup)

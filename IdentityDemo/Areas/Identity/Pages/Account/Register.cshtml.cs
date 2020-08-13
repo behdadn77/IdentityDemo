@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using IdentityDemo.Classes;
+using reCAPTCHA.AspNetCore;
 
 namespace IdentityDemo.Areas.Identity.Pages.Account
 {
@@ -25,17 +26,20 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
         private readonly CustomUserManager _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IRecaptchaService recaptchaService;
 
         public RegisterModel(
             CustomUserManager userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IRecaptchaService recaptchaService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            this.recaptchaService = recaptchaService;
         }
 
         [BindProperty]
@@ -80,6 +84,11 @@ namespace IdentityDemo.Areas.Identity.Pages.Account
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            var recaptcha = await recaptchaService.Validate(Request);
+            if (!recaptcha.success || recaptcha.score != 0 && recaptcha.score < 5)
+                ModelState.AddModelError("Recaptcha", "reCAPTCHA failed!");
+
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName };

@@ -45,7 +45,6 @@ namespace IdentityDemo
 
             services.Configure<IdentityDefaultOptions>(Configuration.GetSection("IdentityProperties"));
             services.Configure<EmailSenderOptions>(Configuration.GetSection("EmailProperties"));
-            services.Configure<ReCaptchav3Options>(Configuration.GetSection("ReCaptchav3"));
 
             #region Identity configurations 
             //(can be separated in IdentityHostingStartup)
@@ -111,7 +110,6 @@ namespace IdentityDemo
 
             services.AddTransient<IEmailSender, EmailSender>(); // requires using Microsoft.AspNetCore.Identity.UI.Services; using WebPWrecover.Services;
 
-            services.AddTransient<ReCaptchav3Service>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
